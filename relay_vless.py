@@ -4,18 +4,24 @@
 
 import asyncio
 import secrets
+import socket
+import logging
 from datetime import datetime
 
 from fastapi import WebSocket, WebSocketDisconnect
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Import از main.py - فقط logger و توابع ضروری
+# ══════════════════════════════════════════════════════════════════════════════
 from main import (
+    logger,
+    # اینا رو از main میاریم
     LINKS,
     LINKS_LOCK,
     stats,
     hourly_traffic,
     connections,
     error_logs,
-    logger,
     is_link_allowed,
     is_ip_allowed,
     save_state,
@@ -168,7 +174,6 @@ async def websocket_tunnel(ws: WebSocket, uuid: str):
         )
         sock = writer.transport.get_extra_info('socket')
         if sock:
-            import socket
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         if payload:
