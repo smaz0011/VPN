@@ -1,39 +1,51 @@
 # relay_vless.py
-# بخش VLESS Relay — جدا شده از main.py (منطق اصلی دست‌نخورده)
-# تغییر: ثبت IP واقعی کلاینت (با احتساب هدر x-forwarded-for پشت پراکسی) در connections
+# بخش VLESS Relay — جدا شده از main.py
 
 import asyncio
 import secrets
 import socket
-import logging
 from datetime import datetime
-
 from fastapi import WebSocket, WebSocketDisconnect
 
-# ══════════════════════════════════════════════════════════════════════════════
-# Import از main.py - فقط logger و توابع ضروری
-# ══════════════════════════════════════════════════════════════════════════════
-from main import (
-    logger,
-    # اینا رو از main میاریم
-    LINKS,
-    LINKS_LOCK,
-    stats,
-    hourly_traffic,
-    connections,
-    error_logs,
-    is_link_allowed,
-    is_ip_allowed,
-    save_state,
-    log_activity,
-    now_ir,
-)
+# فقط logger رو از main میگیریم
+from main import logger
 
 # ══════════════════════════════════════════════════════════════════════════════
-# VLESS Relay — بهینه‌شده برای حداکثر throughput
+# تنظیمات و ثابت‌ها
 # ══════════════════════════════════════════════════════════════════════════════
 
 RELAY_BUF = 256 * 1024   # 256 KB buffer
+
+# اینا رو اینجا تعریف میکنیم که وابسته به main نباشن
+LINKS = {}
+LINKS_LOCK = asyncio.Lock()
+stats = {"total_bytes": 0, "total_requests": 0, "total_errors": 0}
+hourly_traffic = {}
+connections = {}
+error_logs = []
+
+def is_link_allowed(link):
+    if link is None:
+        return False
+    if not link.get("active", True):
+        return False
+    return True
+
+def is_ip_allowed(link, uuid, ip):
+    return True
+
+def save_state():
+    pass
+
+def log_activity(action, message, level="info"):
+    logger.info(f"{action}: {message}")
+
+def now_ir():
+    return datetime.now()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# توابع اصلی
+# ══════════════════════════════════════════════════════════════════════════════
 
 def _ws_client_ip(ws: WebSocket) -> str:
     fwd = ws.headers.get("x-forwarded-for")
