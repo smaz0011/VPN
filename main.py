@@ -586,7 +586,7 @@ def _downstream_gen(sess: dict):
 
 # ── XHTTP Routes ─────────────────────────────────────────────────────────────
 
-@router = APIRouter()  # این خط رو اضافه کن
+router = APIRouter() # این خط رو اضافه کن
 
 @router.get("/xhttp-siz10/{mode}/{uuid}/{session_id}")
 async def xhttp_downlink(mode: str, uuid: str, session_id: str, request: Request):
