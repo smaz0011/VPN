@@ -12,13 +12,12 @@ from urllib.parse import quote
 from collections import deque, defaultdict
 from pathlib import Path
 
-from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect, Depends
+from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect, Depends, APIRouter
 from fastapi.responses import Response, HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import httpx
 import logging
-
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("X4G")
 
